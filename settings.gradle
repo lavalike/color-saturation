@@ -1,0 +1,3 @@
+rootProject.name='color-saturation'
+include ':app'
+include ':saturation'
