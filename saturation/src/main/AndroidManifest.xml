@@ -1,2 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wangzhen.saturation" />
+    package="com.wangzhen.saturation">
+
+    <application>
+        <provider
+            android:name=".provider.ContextProvider"
+            android:authorities="${applicationId}.contextprovider"
+            android:exported="false" />
+    </application>
+</manifest>
