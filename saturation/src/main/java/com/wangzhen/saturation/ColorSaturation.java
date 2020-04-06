@@ -16,7 +16,6 @@ import com.wangzhen.saturation.provider.ContextProvider;
  */
 public final class ColorSaturation {
     private static ColorSaturation sInstance;
-    private Paint mPaint;
 
     static {
         sInstance = new ColorSaturation();
@@ -27,28 +26,15 @@ public final class ColorSaturation {
     }
 
     /**
-     * init color saturation
+     * init color saturation, apply color saturation to each activity
      *
      * @param saturation saturation
      */
-    public static void init(float saturation) {
-        sInstance.apply(saturation);
-    }
-
-    /**
-     * apply color saturation to each activity
-     *
-     * @param saturation saturation
-     */
-    private void apply(float saturation) {
-        mPaint = new Paint();
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(saturation);
-        mPaint.setColorFilter(new ColorMatrixColorFilter(matrix));
+    public static void init(final float saturation) {
         ((Application) ContextProvider.sContext).registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                activity.getWindow().getDecorView().setLayerType(View.LAYER_TYPE_HARDWARE, mPaint);
+                sInstance.applyView(activity.getWindow().getDecorView(), saturation);
             }
 
             @Override
@@ -81,5 +67,43 @@ public final class ColorSaturation {
 
             }
         });
+    }
+
+    /**
+     * apply color saturation to given view
+     *
+     * @param view       view
+     * @param saturation saturation
+     */
+    public static void apply(View view, float saturation) {
+        sInstance.applyView(view, saturation);
+    }
+
+    /**
+     * apply color saturation to given view
+     *
+     * @param view       view
+     * @param saturation saturation
+     */
+    private void applyView(View view, float saturation) {
+        if (view == null || saturation < 0) {
+            return;
+        }
+        view.setLayerType(View.LAYER_TYPE_HARDWARE, createPaint(saturation));
+    }
+
+
+    /**
+     * create paint
+     *
+     * @param saturation saturation
+     * @return paint
+     */
+    private Paint createPaint(float saturation) {
+        Paint paint = new Paint();
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(saturation);
+        paint.setColorFilter(new ColorMatrixColorFilter(matrix));
+        return paint;
     }
 }
