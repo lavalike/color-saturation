@@ -8,7 +8,10 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.FloatRange;
+
 import com.wangzhen.saturation.provider.ContextProvider;
+import com.wangzhen.saturation.type.SaturationScale;
 
 /**
  * change color saturation of app.
@@ -30,7 +33,7 @@ public final class ColorSaturation {
      *
      * @param saturation saturation
      */
-    public static void init(final float saturation) {
+    public static void init(@FloatRange(from = SaturationScale.GRAY, to = SaturationScale.IDENTITY) final float saturation) {
         ((Application) ContextProvider.sContext).registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -75,7 +78,7 @@ public final class ColorSaturation {
      * @param view       view
      * @param saturation saturation
      */
-    public static void apply(View view, float saturation) {
+    public static void apply(View view, @FloatRange(from = SaturationScale.GRAY, to = SaturationScale.IDENTITY) float saturation) {
         sInstance.applyView(view, saturation);
     }
 
@@ -86,8 +89,14 @@ public final class ColorSaturation {
      * @param saturation saturation
      */
     private void applyView(View view, float saturation) {
-        if (view == null || saturation < 0) {
+        if (view == null) {
             return;
+        }
+        if (saturation < SaturationScale.GRAY) {
+            saturation = SaturationScale.GRAY;
+        }
+        if (saturation > SaturationScale.IDENTITY) {
+            saturation = SaturationScale.IDENTITY;
         }
         view.setLayerType(View.LAYER_TYPE_HARDWARE, createPaint(saturation));
     }
